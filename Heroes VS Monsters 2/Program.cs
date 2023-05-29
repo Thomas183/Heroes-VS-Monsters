@@ -7,6 +7,7 @@ using Heroes_VS_Monsters_2.Models.Characters.Monsters;
 using Heroes_VS_Monsters_2.Models.Characters.Monsters.Wolf;
 using Heroes_VS_Monsters_2.Inerfaces;
 using System.Runtime.CompilerServices;
+using System;
 
 namespace Heroes_VS_Monsters_2
 {
@@ -34,7 +35,7 @@ namespace Heroes_VS_Monsters_2
                         break;
                     default: throw new Exception($"Character selection error");
                 }
-                // Add character to board
+                // Add hero to board
                 board.Move(hero, (hero.Pos.y, hero.Pos.x));
                 // Add monsters to board
                 int monstersLeft = board.PopulateBoard();
@@ -42,9 +43,15 @@ namespace Heroes_VS_Monsters_2
 
                 while (hero.HitPoints > 0 && monstersLeft > 0)
                 {
-                    DrawBoard(board.board);
+                    (int y, int x) monsterPos = (0, 0);
+                    DrawBoard(board.board, null);
                     ReadArrowKey(hero, board);
-                    isHeroNextToMonster(hero, board, ref monstersLeft);
+                    DrawBoard(board.board, null);
+                    if(isHeroNextToMonster(hero, board, out monsterPos))
+                    {
+                        DrawBoard(board.board, monsterPos);
+                        fight(hero, board.board[monsterPos.y, monsterPos.x], board.board, ref monstersLeft);
+                    }
                 }
                 if (monstersLeft == 0)
                 {
@@ -70,7 +77,7 @@ namespace Heroes_VS_Monsters_2
             }
             return result;
         }
-        private static void DrawBoard(Character[,] board)
+        private static void DrawBoard(Character[,] board, (int y, int x)? monsterPos)
         {
             Thread.Sleep(1000);
             Console.Clear();
@@ -79,13 +86,17 @@ namespace Heroes_VS_Monsters_2
             {
                 for (int x = 0; x < board.GetLength(1); x++)
                 {
-                    if (board[y, x] is Character)
+                    if (board[y, x] is Hero)
+                    {
+                        Console.Write($"[{board[y, x].Letter}]");
+                    }
+                    else if(monsterPos != null && (y, x) == monsterPos)
                     {
                         Console.Write($"[{board[y, x].Letter}]");
                     }
                     else
                     {
-                        Console.Write("[#]");
+                        Console.Write("[ ]");
                     }
                 }
                 Console.WriteLine();
@@ -96,30 +107,31 @@ namespace Heroes_VS_Monsters_2
             bool isPositionAvailable = false;
             while (!isPositionAvailable)
             {
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                ConsoleKeyInfo arrow;
                 (int y, int x) newPos = (0, 0);
-                switch (keyInfo.Key)
+                do
                 {
-                    case (ConsoleKey.UpArrow):
-                        newPos.y = hero.Pos.y - 1;
-                        newPos.x = hero.Pos.x;
-                        break;
-                    case (ConsoleKey.DownArrow):
-                        newPos.y = hero.Pos.y + 1;
-                        newPos.x = hero.Pos.x;
-                        break;
-                    case (ConsoleKey.LeftArrow):
-                        newPos.y = hero.Pos.y;
-                        newPos.x = hero.Pos.x - 1;
-                        break;
-                    case (ConsoleKey.RightArrow):
-                        newPos.y = hero.Pos.y;
-                        newPos.x = hero.Pos.x + 1;
-                        break;
-                    default:
-                        Console.WriteLine("Mauvaise entrée, réessayez");
-                        break;
-                }
+                    arrow = Console.ReadKey();
+                } while (!isValidArrowKey(arrow.Key));
+                    switch (arrow.Key)
+                    {
+                        case (ConsoleKey.UpArrow):
+                            newPos.y = hero.Pos.y - 1;
+                            newPos.x = hero.Pos.x;
+                            break;
+                        case (ConsoleKey.DownArrow):
+                            newPos.y = hero.Pos.y + 1;
+                            newPos.x = hero.Pos.x;
+                            break;
+                        case (ConsoleKey.LeftArrow):
+                            newPos.y = hero.Pos.y;
+                            newPos.x = hero.Pos.x - 1;
+                            break;
+                        case (ConsoleKey.RightArrow):
+                            newPos.y = hero.Pos.y;
+                            newPos.x = hero.Pos.x + 1;
+                            break;
+                    }
                 if (!board.IsPositionBorder(newPos))
                 {
                     board.Move(hero, newPos, hero.Pos);
@@ -127,7 +139,20 @@ namespace Heroes_VS_Monsters_2
                 }
             }
         }
-        public static void isHeroNextToMonster(Hero hero, Board board, ref int monstersLeft)
+        public static bool isValidArrowKey(ConsoleKey key)
+        {
+            switch (key)
+            {
+                case ConsoleKey.UpArrow:
+                case ConsoleKey.DownArrow:
+                case ConsoleKey.LeftArrow:
+                case ConsoleKey.RightArrow:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        public static bool isHeroNextToMonster(Hero hero, Board board, out (int y, int x) monsterPos)
         {
             (int y, int x)[] relativePosition = new (int y, int x)[]
             {
@@ -143,9 +168,12 @@ namespace Heroes_VS_Monsters_2
                 if (board.IsPositionBorder((rY, rX))) { continue; }
                 if (board.board[rY, rX] != null)
                 {
-                    fight(hero, board.board[rY, rX]!, board.board!, ref monstersLeft);
+                    monsterPos = board.board[rY, rX]!.Pos;
+                    return true;
                 }
             }
+            monsterPos = (0, 0);
+            return false;
         }
         public static void fight(Hero hero, Character monster, Character[,] board, ref int monstersLeft)
         {
@@ -166,6 +194,7 @@ namespace Heroes_VS_Monsters_2
             if (monster.HitPoints <= 0)
             {
                 Console.WriteLine("Vous avez vaincu le monstre, vous vous reposez et récupérez tous vos points de vie");
+                board[monster.Pos.y, monster.Pos.x] = null;
                 monstersLeft--;
                 foreach(KeyValuePair<string, int> item in hero.Inventory)
                 {
