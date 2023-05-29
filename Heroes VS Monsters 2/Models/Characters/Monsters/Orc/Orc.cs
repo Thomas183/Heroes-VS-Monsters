@@ -16,6 +16,7 @@ namespace Heroes_VS_Monsters_2.Models.Characters.Monsters.Orc
             Gold = dice.Throw();
             Name = "Orc";
             Letter = 'O';
+            Strength += 1;
         }
     }
 }

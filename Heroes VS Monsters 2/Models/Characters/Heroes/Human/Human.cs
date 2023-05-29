@@ -10,6 +10,7 @@ namespace Heroes_VS_Monsters_2.Models.Characters.Heroes.Human
     {
         public Human(int hitPoints, Character[,] gameBoard, Board board) : base(hitPoints, gameBoard, board)
         {
+            Strength += 1;
             Name = "Human";
         }
     }

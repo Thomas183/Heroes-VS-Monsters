@@ -21,6 +21,7 @@ namespace Heroes_VS_Monsters_2.Models
         {
             board = new Character?[height, width];
         }
+        // Returns true if given position is not within two cases of another Character
         public bool IsPositionAvailable((int y, int x) position)
         {
             int boardHeight = board.GetLength(0);
@@ -60,6 +61,7 @@ namespace Heroes_VS_Monsters_2.Models
             }
             return true;
         }
+        // Return true if given position is not outside the border
         public bool IsPositionBorder((int y, int x) pos)
         {
             int boardHeight = board.GetLength(0);
@@ -73,6 +75,7 @@ namespace Heroes_VS_Monsters_2.Models
                 return false;
             }
         }
+        // Returns a position that is not within two cases of another Character or outside the border
         public (int y, int x) GetPosition()
         {
             Dice diceFifteen = new Dice(0, 14);
@@ -104,11 +107,11 @@ namespace Heroes_VS_Monsters_2.Models
                         monster = new Dragonling(10, board, this);
                         break;
                 }
-                Console.WriteLine($"Monster {monster.Name} {i} added");
                 board[monster!.Pos.y, monster.Pos.x] = monster;
             }
             return monstersAmount;
         }
+        // Move the given Character in the given New Position and if oldPosition is passed, reset that position
         public void Move(Character character, (int y, int x) newPosition, (int y, int x)? oldPosition = null)
         {
             if(!IsPositionBorder(newPosition))

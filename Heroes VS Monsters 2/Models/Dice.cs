@@ -16,10 +16,12 @@ namespace Heroes_VS_Monsters_2.Models
             _min = min;
             _max = max;
         }
+        // Return a random integer based on the min and max (inclusive) values
         public int Throw()
         {
             return rnd.Next(_min, _max+1);
         }
+        // Returns a score based on a ammount of best throws to keep and an amount of dices
         public int KeepBestTrhows(int throws, int ammountToKeep)
         {
             int score = 0;

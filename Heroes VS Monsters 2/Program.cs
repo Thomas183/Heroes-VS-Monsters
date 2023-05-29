@@ -16,11 +16,11 @@ namespace Heroes_VS_Monsters_2
         static void Main(string[] args)
         {
             bool GameRunning = true;
+            // Game Loop
             while (GameRunning)
             {
-                Console.WriteLine("-Game start-\n");
                 Board board = new Board(15, 15);
-                // Character Selection
+                // Create new hero based on user selection
                 Hero hero;
                 Console.WriteLine("Quelle classe désirez vous jouer ?\n1: Humain\n2: Nain\n");
                 switch (GetUserInput(2))
@@ -41,6 +41,7 @@ namespace Heroes_VS_Monsters_2
                 int monstersLeft = board.PopulateBoard();
                 Console.ReadKey();
 
+                // Current Game loop
                 while (hero.HitPoints > 0 && monstersLeft > 0)
                 {
                     (int y, int x) monsterPos = (0, 0);
@@ -68,6 +69,7 @@ namespace Heroes_VS_Monsters_2
                 }
             }
         }
+        // Returns int within a given range based on user input
         public static int GetUserInput(int range)
         {
             int result = 0;
@@ -77,9 +79,9 @@ namespace Heroes_VS_Monsters_2
             }
             return result;
         }
+        // Draws the game playzone, if monsterPos != null, draws the letter of the monster in that given position
         private static void DrawBoard(Character[,] board, (int y, int x)? monsterPos)
         {
-            Thread.Sleep(1000);
             Console.Clear();
             Console.WriteLine(DateTime.Now.ToString("hh:mm:ss"));
             for (int y = 0; y < board.GetLength(0); y++)
@@ -102,6 +104,7 @@ namespace Heroes_VS_Monsters_2
                 Console.WriteLine();
             }
         }
+        // Reads arrow key and call the Move() function to move the character
         public static void ReadArrowKey(Character hero, Board board)
         {
             bool isPositionAvailable = false;
@@ -139,6 +142,7 @@ namespace Heroes_VS_Monsters_2
                 }
             }
         }
+        // Returns true if the key pressed is an arrow key
         public static bool isValidArrowKey(ConsoleKey key)
         {
             switch (key)
@@ -152,6 +156,7 @@ namespace Heroes_VS_Monsters_2
                     return false;
             }
         }
+        // Returns true if a monster is horizontally or vertically adjacent to the hero
         public static bool isHeroNextToMonster(Hero hero, Board board, out (int y, int x) monsterPos)
         {
             (int y, int x)[] relativePosition = new (int y, int x)[]
@@ -175,6 +180,7 @@ namespace Heroes_VS_Monsters_2
             monsterPos = (0, 0);
             return false;
         }
+        // Initiate a fight, if the hero wins, draw the inventory and restet hp to Max HP. Subscribes the hero to the monster 
         public static void fight(Hero hero, Character monster, Character[,] board, ref int monstersLeft)
         {
             hero.SubscribeToMonster(monster as Monster);

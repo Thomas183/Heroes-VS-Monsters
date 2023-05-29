@@ -10,6 +10,7 @@ namespace Heroes_VS_Monsters_2.Models.Characters.Heroes.Dwarf
     {
         public Dwarf(int hitPoints, Character[,] gameBoard, Board board) : base(hitPoints, gameBoard, board)
         {
+            Endurence += 2;
             Name = "Dwarf";
         }
     }

@@ -10,8 +10,8 @@ namespace Heroes_VS_Monsters_2.Models.Characters
     public abstract class Character
     {
         public event Action<Character> OnDeath;
-        private int Endurence { get; set; }
-        private int Strength { get; set; }
+        protected int Endurence { get; set; }
+        protected int Strength { get; set; }
         private int _hitPoints { get; set; }
         public int HitPoints
         { 
@@ -44,6 +44,7 @@ namespace Heroes_VS_Monsters_2.Models.Characters
             _hitPoints = ApplyModifier(hitPoints, Endurence);
             Pos = board.GetPosition();
         }
+        // Removes HitPoints of the given Character based on a random 6 faced dice and the strenght modifier
         public void Hit(Character target)
         {
             Dice diceFour = new Dice(1, 4);
@@ -51,6 +52,7 @@ namespace Heroes_VS_Monsters_2.Models.Characters
             Console.WriteLine($"{Name} attaque {target.Name} de {lifeToRemove} le laissant à {target.HitPoints}");
             target.HitPoints -= lifeToRemove;
         }
+        // Returns a modified value based on the given Character's stat
         private int ApplyModifier(int baseStat, int modifierStat)
         {
             int modifier;
@@ -72,6 +74,7 @@ namespace Heroes_VS_Monsters_2.Models.Characters
             }
             return baseStat + modifier;
         }
+        // Function that calls the OnDeath Event, pass the class isntance as parameter of OnDeath's stored functions
         protected void Die()
         {
             OnDeath?.Invoke(this);

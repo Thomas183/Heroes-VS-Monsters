@@ -23,10 +23,12 @@ namespace Heroes_VS_Monsters_2.Models.Characters.Heroes
             MaxHp = HitPoints;
             Letter = 'H';
         }
+        // Add "AddLootToInventory" function to Even
         public void SubscribeToMonster(Monster monster)
         {
             monster.OnDeath += AddLootToInventory;
         }
+        // Add loot to inventory depending of the type of monster
         private void AddLootToInventory(Character monster)
         {
             if (monster is IGold goldMonster)

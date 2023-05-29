@@ -19,6 +19,7 @@ namespace Heroes_VS_Monsters_2.Models.Characters.Monsters.Dragonling
             Gold = diceSix.Throw();
             Name = "Dragonling";
             Letter = 'D';
+            Endurence += 1;
         }
     }
 }
